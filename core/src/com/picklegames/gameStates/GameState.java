@@ -18,6 +18,11 @@ public abstract class GameState {
 	
 	public GameState(GameStateManager gsm){
 		this.gsm = gsm; 
+		game = gsm.game();
+		batch = game.getBatch();
+		cam = game.getCam();
+		hudCam = game.getHudCam();
+		init();
 		
 	}
 	

@@ -53,16 +53,11 @@ public class EnglishGame extends ApplicationAdapter {
 		}
 
 	}
-	
-	public void update(float dt){
-		cam.update();
-		gsm.update(dt);
-		world.step(dt, 2, 2);
-	}
+
 
 	@Override
 	public void render() {
-		Gdx.gl.glClearColor(0,1,1,1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		update(Gdx.graphics.getDeltaTime());
 
@@ -75,6 +70,13 @@ public class EnglishGame extends ApplicationAdapter {
 			bdr.render(world, cam.combined.scl(B2DVars.PPM));
 		}
 	}
+	
+	public void update(float dt) {
+		cam.update();
+		gsm.update(dt);
+		world.step(dt, 2, 2);
+	}
+
 
 	@Override
 	public void dispose() {
@@ -83,4 +85,21 @@ public class EnglishGame extends ApplicationAdapter {
 		world.dispose();
 		res.removeAll();
 	}
+
+	public static OrthographicCamera getHudCam() {
+		return hudCam;
+	}
+
+	public static World getWorld() {
+		return world;
+	}
+
+	public OrthographicCamera getCam() {
+		return cam;
+	}
+
+	public SpriteBatch getBatch() {
+		return batch;
+	}
+
 }

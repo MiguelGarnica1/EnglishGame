@@ -20,10 +20,14 @@ public class GameStateManager {
 	public GameStateManager(EnglishGame game) {
 		this.game = game;
 		gameStates = new Stack<GameState>();
-		pushState(MENU);
+		pushState(PLAY);
 
 	}
-
+	
+	public EnglishGame game(){
+		return game;
+	}
+	
 	public void update(float dt) {
 		gameStates.peek().update(dt);
 	}
