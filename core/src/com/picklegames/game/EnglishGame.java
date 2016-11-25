@@ -32,7 +32,7 @@ public class EnglishGame extends ApplicationAdapter {
 
 	@Override
 	public void create() {
-		world = new World(new Vector2(0, 0), true);
+		world = new World(new Vector2(0, -9.81f), true);
 
 		// load content
 		res = new Content();
