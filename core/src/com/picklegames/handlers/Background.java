@@ -45,17 +45,15 @@ public class Background {
 		float x = ((this.x + gameCam.viewportWidth / 2 - gameCam.position.x) * scale) % image.getRegionWidth();
 		float y = ((this.y + gameCam.viewportHeight / 2 - gameCam.position.y) * scale) % image.getRegionHeight();
 		
-		batch.begin();
 		
 		int colOffset = x > 0 ? -1 : 0;
 		int rowOffset = y > 0 ? -1 : 0;
 		for(int row = 0; row < numDrawY; row++) {
 			for(int col = 0; col < numDrawX; col++) {
-				batch.draw(image, x + (col + colOffset) * image.getRegionWidth(), y + (rowOffset + row) * image.getRegionHeight());
+				batch.draw(image, x + (col + colOffset) * image.getRegionWidth(), y + (rowOffset + row) * image.getRegionHeight(), image.getRegionWidth(), gameCam.viewportHeight);
 			}
 		}
 		
-		batch.end();
 		
 	}
 

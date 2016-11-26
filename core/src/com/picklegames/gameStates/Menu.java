@@ -28,11 +28,12 @@ public class Menu extends GameState {
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		EnglishGame.res.loadTexture("menu.png", "menu");
+		EnglishGame.res.loadTexture("images/menu.png", "menu");
 		tex = EnglishGame.res.getTexture("menu");
 		bg = new Background(new TextureRegion(tex), cam, 1f);
-		bg.setVector(-20, 0);
+		bg.setVector(-450, 0);
 
+		EnglishGame.res.loadTexture("images/player.png", "player");
 		tex = EnglishGame.res.getTexture("player");
 		TextureRegion[] reg = new TextureRegion[4];
 		for (int i = 0; i < reg.length; i++) {
@@ -40,8 +41,10 @@ public class Menu extends GameState {
 		}
 		animation = new Animation(reg, 1 / 12f);
 
-		tex = EnglishGame.res.getTexture("hud");
-		playButton = new GameButton(new TextureRegion(tex, 0, 34, 58, 27), 160, 100, cam);
+		EnglishGame.res.loadTexture("images/button.png", "button");
+		tex = EnglishGame.res.getTexture("button");
+		playButton = new GameButton(new TextureRegion(tex, 64, 32), 600, 300, cam);
+		playButton.setText("PLAY");
 
 		cam.setToOrtho(false, EnglishGame.V_WIDTH, EnglishGame.V_HEIGHT);
 	}
@@ -75,8 +78,8 @@ public class Menu extends GameState {
 		batch.setProjectionMatrix(cam.combined);
 		
 		bg.render(batch);
-		playButton.render(batch);
-		batch.draw(animation.getFrame(), 150, 50);
+		playButton.render(batch, 200, 100);
+		batch.draw(animation.getFrame(), 175, 75, 150,150);
 	}
 
 	@Override
