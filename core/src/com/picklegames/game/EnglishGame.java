@@ -19,7 +19,7 @@ public class EnglishGame extends ApplicationAdapter {
 	public static final int V_WIDTH = 800;
 	public static final int V_HEIGHT =600;
 	public static final float SCALE = 1f;
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	public static Content res;
 	public static World world;
 
@@ -29,7 +29,7 @@ public class EnglishGame extends ApplicationAdapter {
 	private GameStateManager gsm;
 
 	private Box2DDebugRenderer bdr;
-
+	
 	@Override
 	public void create() {
 		world = new World(new Vector2(0, -9.81f), true);
@@ -60,7 +60,7 @@ public class EnglishGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		update(Gdx.graphics.getDeltaTime());
-
+		
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		gsm.render();
@@ -69,12 +69,15 @@ public class EnglishGame extends ApplicationAdapter {
 		if (DEBUG) {
 			bdr.render(world, cam.combined.scl(B2DVars.PPM));
 		}
+		
+		
 	}
 	
 	public void update(float dt) {
 		cam.update();
+		world.step(dt, 6, 2);
 		gsm.update(dt);
-		world.step(dt, 2, 2);
+		
 	}
 
 

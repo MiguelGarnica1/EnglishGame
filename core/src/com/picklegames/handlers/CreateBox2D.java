@@ -43,7 +43,7 @@ public final class CreateBox2D {
 
 		// final tweaks, manually set the player body mass to 1 kg
 		MassData md = body.getMassData();
-		md.mass = 1;
+		md.mass  = 1f;
 		body.setMassData(md);
 
 		return body;
