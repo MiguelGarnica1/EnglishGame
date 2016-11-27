@@ -43,7 +43,7 @@ public class Menu extends GameState {
 
 		EnglishGame.res.loadTexture("images/button.png", "button");
 		tex = EnglishGame.res.getTexture("button");
-		playButton = new GameButton(new TextureRegion(tex, 64, 32), 600, 300, cam);
+		playButton = new GameButton(new TextureRegion(tex, 64, 32), 600, 300, 200, 100, cam);
 		playButton.setText("PLAY");
 
 		cam.setToOrtho(false, EnglishGame.V_WIDTH, EnglishGame.V_HEIGHT);
@@ -78,7 +78,7 @@ public class Menu extends GameState {
 		batch.setProjectionMatrix(cam.combined);
 		
 		bg.render(batch);
-		playButton.render(batch, 200, 100);
+		playButton.render(batch);
 		batch.draw(animation.getFrame(), 175, 75, 150,150);
 	}
 

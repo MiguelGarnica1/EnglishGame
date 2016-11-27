@@ -29,14 +29,13 @@ public class GameButton {
 
 	private boolean clicked;
 
-	public GameButton(TextureRegion reg, float x, float y, OrthographicCamera cam) {
+	public GameButton(TextureRegion reg, float x, float y, float width, float height, OrthographicCamera cam) {
 		this.reg = reg;
 		this.x = x;
 		this.y = y;
 		this.cam = cam;
-
-		width = reg.getRegionWidth();
-		height = reg.getRegionHeight();
+		this.width = width;
+		this.height = height;
 		vec = new Vector3();
 
 		font = new BitmapFont();
@@ -67,8 +66,8 @@ public class GameButton {
 		}
 	}
 
-	public void render(SpriteBatch batch, float width, float height) {
-
+	public void render(SpriteBatch batch) {
+		
 		batch.draw(reg, x - width / 2, y - height / 2, width, height);
 		if (text != null) {
 			font.getData().setScale(2);
