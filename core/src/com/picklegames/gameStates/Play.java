@@ -91,6 +91,15 @@ public class Play extends GameState {
 		// create and set world contact listener
 		cl = new MyContactListener();
 		EnglishGame.world.setContactListener(cl);
+		
+		// load sfx
+		EnglishGame.res.loadSound("sfx/jump.wav", "jump");
+		EnglishGame.res.loadSound("sfx/item.wav", "item");
+		
+		// load music
+		EnglishGame.res.loadMusic("music/Black Violin - Opus.mp3", "opus");
+		EnglishGame.res.getMusic("opus").setVolume(.15f);
+		EnglishGame.res.getMusic("opus").play();
 
 	}
 
@@ -107,6 +116,8 @@ public class Play extends GameState {
 
 		if (Gdx.input.isKeyJustPressed(Keys.W) && cl.isPlayerOnGround()) {
 			player.getBody().applyForceToCenter(0, 230, true);
+			EnglishGame.res.getSound("jump").setVolume(0, .5f);
+			EnglishGame.res.getSound("jump").play();
 
 		}
 
@@ -137,6 +148,7 @@ public class Play extends GameState {
 			coll.removeValue((Collectible) b.getUserData(), true );
 			EnglishGame.world.destroyBody(b);
 			player.collectItem();
+			EnglishGame.res.getSound("item").play();
 			
 		}
 		bodies.clear();
