@@ -13,6 +13,9 @@ public class Player extends Entity {
 
 	private TextureRegion[] texR;
 	private Texture tex;
+	
+	private int numItems;
+	private int totalItems;
 
 	public Player() {
 		init();
@@ -56,6 +59,22 @@ public class Player extends Entity {
 		}
 
 		
+	}
+	
+	public void collectItem(){
+		numItems++;
+	}
+
+	public int getTotalItems() {
+		return totalItems;
+	}
+
+	public void setTotalItems(int totalItems) {
+		this.totalItems = totalItems;
+	}
+
+	public int getNumItems() {
+		return numItems;
 	}
 
 	@Override

@@ -25,8 +25,8 @@ public class Background {
 		this.image = image;
 		this.gameCam = gameCam;
 		this.scale = scale;
-		numDrawX = EnglishGame.V_WIDTH / image.getRegionWidth() + 1;
-		numDrawY = EnglishGame.V_HEIGHT / image.getRegionHeight() + 1;
+		numDrawX = EnglishGame.V_WIDTH / image.getRegionWidth() + 2;
+		numDrawY = EnglishGame.V_HEIGHT / image.getRegionHeight() + 2;
 
 	}
 	
