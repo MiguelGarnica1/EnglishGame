@@ -61,6 +61,11 @@ public class Player extends Entity {
 		
 	}
 	
+	public void setScale(float x, float y){
+		width = x;
+		height = y;
+	}
+	
 	public void collectItem(){
 		numItems++;
 	}

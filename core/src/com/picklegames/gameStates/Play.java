@@ -1,11 +1,10 @@
 package com.picklegames.gameStates;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -47,6 +46,8 @@ public class Play extends GameState {
 
 	private Player player;
 	private Array<Collectible> coll;
+	
+	private BitmapFont font;
 
 	public static int level;
 
@@ -92,6 +93,13 @@ public class Play extends GameState {
 		cl = new MyContactListener();
 		EnglishGame.world.setContactListener(cl);
 		
+		// set box2d boundaries at edge of tile map
+		addBound(new Vector2(0,0), new Vector2(0,cam.viewportHeight), B2DVars.BIT_WALL, B2DVars.BIT_PLAYER);
+		addBound(new Vector2(tileMapWidth * tileSize, 0), new Vector2(tileMapWidth * tileSize, cam.viewportHeight), B2DVars.BIT_WALL, B2DVars.BIT_PLAYER);
+		
+		// load font
+		font = new BitmapFont();
+		
 		// load sfx
 		EnglishGame.res.loadSound("sfx/jump.wav", "jump");
 		EnglishGame.res.loadSound("sfx/item.wav", "item");
@@ -130,6 +138,7 @@ public class Play extends GameState {
 		
 		// update player
 		player.update(dt);
+		
 
 		// update bg
 		for (Background b : bg) {
@@ -148,6 +157,7 @@ public class Play extends GameState {
 			coll.removeValue((Collectible) b.getUserData(), true );
 			EnglishGame.world.destroyBody(b);
 			player.collectItem();
+			player.setScale(player.getWidth() * 1.05f, player.getHeight() * 1.05f);
 			EnglishGame.res.getSound("item").play();
 			
 		}
@@ -173,6 +183,7 @@ public class Play extends GameState {
 
 		batch.setProjectionMatrix(cam.combined);
 		setCameraBounds();
+		
 
 		// render background
 		for (Background b : bg) {
@@ -193,6 +204,12 @@ public class Play extends GameState {
 		// render player
 		batch.setProjectionMatrix(cam.combined);
 		player.render(batch);
+		
+		// render font
+		if(player.getWorldPosition().x > tileMapWidth * tileSize - player.getWidth() * 2){
+			font.getData().setScale(2);
+			font.draw(batch, "YOU WIN", cam.position.x, cam.position.y);
+		}
 	}
 
 	public void createPlayerBox2D() {
@@ -311,6 +328,31 @@ public class Play extends GameState {
 			coll.add(c);
 
 		}
+	}
+	
+	public void addBound(Vector2 x1y1, Vector2 x2y2, short categoryBits, short maskBits) {
+
+		Body body;
+
+		BodyDef bdef = new BodyDef();
+		bdef.type = BodyType.StaticBody;
+		body = EnglishGame.world.createBody(bdef);
+
+		ChainShape cs = new ChainShape();
+		Vector2[] vertices = new Vector2[2];
+		vertices[0] = new Vector2(x1y1.x / B2DVars.PPM, x1y1.y / B2DVars.PPM);
+		vertices[1] = new Vector2(x2y2.x / B2DVars.PPM, x2y2.y / B2DVars.PPM);	
+		cs.createChain(vertices);
+
+		FixtureDef fdef = new FixtureDef();
+		fdef.shape = cs;
+		fdef.filter.categoryBits = categoryBits;
+		fdef.filter.maskBits = maskBits;
+		body.createFixture(fdef);
+
+	
+		cs.dispose();
+
 	}
 
 	public void setCameraBounds() {

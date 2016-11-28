@@ -25,8 +25,8 @@ public class Collectible extends Entity {
 
 	public void init() {
 
-		EnglishGame.res.loadTexture("images/coins.png", "coins");
-		tex = EnglishGame.res.getTexture("coins");
+		EnglishGame.res.loadTexture("images/burger.png", "burger");
+		tex = EnglishGame.res.getTexture("burger");
 
 		texR = TextureRegion.split(tex, 32, 32)[0];
 		animation.setFrames(texR);
