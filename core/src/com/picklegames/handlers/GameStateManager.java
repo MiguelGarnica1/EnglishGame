@@ -3,6 +3,7 @@ package com.picklegames.handlers;
 import java.util.Stack;
 
 import com.picklegames.game.EnglishGame;
+import com.picklegames.gameStates.END;
 import com.picklegames.gameStates.GameState;
 import com.picklegames.gameStates.Menu;
 import com.picklegames.gameStates.Play;
@@ -16,10 +17,12 @@ public class GameStateManager {
 
 	public static final int MENU = 1111;
 	public static final int PLAY = 1112;
+	public static final int END = 1122;
 
 	public GameStateManager(EnglishGame game) {
 		this.game = game;
 		gameStates = new Stack<GameState>();
+		Play.level = 3;
 		pushState(MENU);
 
 	}
@@ -42,6 +45,8 @@ public class GameStateManager {
 			return new Menu(this);
 		} else if (state == PLAY) {
 			return new Play(this);
+		}else if (state == END){
+			return new END(this);
 		}
 		
 		return null;

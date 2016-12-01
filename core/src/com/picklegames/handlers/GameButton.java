@@ -2,6 +2,7 @@ package com.picklegames.handlers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -64,7 +65,10 @@ public class GameButton {
 				&& vec.y > y - height / 2 && vec.y < y + height / 2) {
 			clicked = true;
 
-		} else {
+		} else if(Gdx.input.isKeyJustPressed(Keys.ENTER)){
+			clicked = true;
+		}
+		else{
 			clicked = false;
 		}
 	}

@@ -59,8 +59,12 @@ public class Play extends GameState {
 	
 	private World world;
 	private Box2DDebugRenderer bdr;
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	public static int level;
+	public static int deaths;
+	public static int burgersEat;
+	public static int score;
+	public static float timePlayed;
 
 	public Play(GameStateManager gsm) {
 		super(gsm);
@@ -121,15 +125,10 @@ public class Play extends GameState {
 		// load font
 		font = new BitmapFont();
 
-		// load sfx
-		EnglishGame.res.loadSound("sfx/jump.wav", "jump");
-		EnglishGame.res.loadSound("sfx/item.wav", "item");
-		EnglishGame.res.loadSound("sfx/hit.wav", "hit");
-
-		// load music
-		EnglishGame.res.loadMusic("music/Black Violin - Opus.mp3", "opus");
 		EnglishGame.res.getMusic("opus").setVolume(.15f);
-		EnglishGame.res.getMusic("opus").play();
+		if(!EnglishGame.res.getMusic("opus").isPlaying()){
+			EnglishGame.res.getMusic("opus").play();
+		}
 
 		hud = new HUD(player.getTotalItems());
 		
@@ -142,15 +141,15 @@ public class Play extends GameState {
 	@Override
 	public void handleInput() {
 
-		if (Gdx.input.isKeyPressed(Keys.A)) {
+		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
 			player.getBody().setLinearVelocity(-2, player.getBody().getLinearVelocity().y);
-		} else if (Gdx.input.isKeyPressed(Keys.D)) {
+		} else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
 			player.getBody().setLinearVelocity(2, player.getBody().getLinearVelocity().y);
 		} else {
 			player.getBody().setLinearVelocity(0, player.getBody().getLinearVelocity().y);
 		}
 
-		if (Gdx.input.isKeyJustPressed(Keys.W) && cl.isPlayerOnGround()) {
+		if (Gdx.input.isKeyJustPressed(Keys.UP) && cl.isPlayerOnGround()) {
 			player.getBody().applyForceToCenter(0, 230, true);
 			EnglishGame.res.getSound("jump").setVolume(0, .5f);
 			EnglishGame.res.getSound("jump").play();
@@ -161,9 +160,11 @@ public class Play extends GameState {
 
 	@Override
 	public void update(float dt) {
-		if (!hud.isWin()) {
+		if (!hud.isWin() && !hud.isPlayerDead()) {
 			handleInput();
 		}
+		
+		timePlayed+=dt;
 		
 		//update world
 		world.step(dt, 4, 4);
@@ -195,6 +196,8 @@ public class Play extends GameState {
 			player.collectItem();
 			player.setScale(player.getWidth() * 1.05f, player.getHeight() * 1.05f);
 			EnglishGame.res.getSound("item").play();
+			burgersEat++;
+			score++;
 
 		}
 		bodies.clear();
@@ -206,6 +209,7 @@ public class Play extends GameState {
 			player.getBody().applyLinearImpulse(0, 2, 0, 0, true);
 			world.destroyBody(b);
 			EnglishGame.res.getSound("hit").play();
+			score++;
 
 		}
 		badguys.clear();
@@ -215,22 +219,38 @@ public class Play extends GameState {
 			System.out.println("YOU WIN!!");
 			hud.setWin(true);
 		}
+		
+		hud.update(player.getNumItems(), dt);
 		if(hud.getContinueButton().isClicked()){
-			level++;
-			gsm.setState(GameStateManager.MENU);
+			if(level<3){
+				level++;
+				//dispose();
+				gsm.setState(GameStateManager.PLAY);
+			}else{
+				//dispose();
+				gsm.setState(GameStateManager.END);
+			}
+		}
+		if(hud.getRetryButton().isClicked()){
+			score--;
+			deaths++;
+			gsm.setState(GameStateManager.PLAY);
 		}
 		
 		//check player hit
 		if(cl.isPlayerHit()){
 			player.getBody().applyLinearImpulse((float) Math.random() * -10,(float) Math.random() * 5, 0, 0, true);
+			hud.setPlayerDead(true);
+			
 		}
 
 		// check player fall into void
 		if (player.getWorldPosition().y < 0) {
 			System.out.println("You lose!!");
+			hud.setPlayerDead(true);
 		}
 
-		hud.update(player.getNumItems(), dt);
+		
 
 	}
 
@@ -270,13 +290,8 @@ public class Play extends GameState {
 
 		batch.setProjectionMatrix(hudCam.combined);
 		hud.render(batch);
-
-		// render font
-		if (player.getWorldPosition().x > tileMapWidth * tileSize - player.getWidth() * 2) {
-			font.getData().setScale(2);
-			font.draw(batch, "YOU WIN", cam.position.x, cam.position.y);
-		}
-		
+	
+		batch.setProjectionMatrix(cam.combined);
 		if (DEBUG) {
 			bdr.render(world, cam.combined.scl(B2DVars.PPM));
 		}
@@ -410,7 +425,7 @@ public class Play extends GameState {
 		for (MapObject mo : layer.getObjects()) {
 
 			BadGuy b = new BadGuy();
-			;
+			
 
 			// create body definition
 			BodyDef bdef = new BodyDef();
@@ -531,24 +546,25 @@ public class Play extends GameState {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		player.dispose();
-		world.clearForces();
-		EnglishGame.res.removeAll();
-		for(BadGuy b : baddies){
-			b.dispose();
-			world.destroyBody(b.getBody());
-		}
-		baddies.clear();
-		for(Collectible c : coll){
-			c.dispose();
-			world.destroyBody(c.getBody());
-		}
-		world.dispose();
-		baddies.clear();
-		player.dispose();
-		tex.dispose();
-		tmr.dispose();
-		font.dispose();
+//		player.dispose();
+//		world.clearForces();
+//		for(BadGuy b : baddies){
+//			b.dispose();
+//			world.destroyBody(b.getBody());
+//		}
+//		baddies.clear();
+//		for(Collectible c : coll){
+//			c.dispose();
+//			world.destroyBody(c.getBody());
+//		}
+//		world.destroyBody(player.getBody());
+//		coll.clear();
+//		bdr.dispose();
+//		world.dispose();
+//		tex.dispose();
+//		tileMap.dispose();
+//		tmr.dispose();
+//		font.dispose();
 			
 
 	}
