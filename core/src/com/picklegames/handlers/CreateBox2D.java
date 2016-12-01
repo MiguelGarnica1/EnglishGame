@@ -34,7 +34,7 @@ public final class CreateBox2D {
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = shape;
 		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
-		fdef.filter.maskBits = B2DVars.BIT_WALL;
+		fdef.filter.maskBits =  B2DVars.BIT_WALL | B2DVars.BIT_ITEM | B2DVars.BIT_BAD;
 
 		// create player collision box fixture
 		body.createFixture(fdef).setUserData("player");
@@ -50,29 +50,29 @@ public final class CreateBox2D {
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
-		fdef.filter.maskBits = B2DVars.BIT_WALL;
+		fdef.filter.maskBits = B2DVars.BIT_WALL | B2DVars.BIT_BAD;
 
 		body.createFixture(fdef).setUserData("foot");
 
 		// create bottom left
-		shape.setAsBox(2 / PPM, 2 / PPM, new Vector2(width / 4 / PPM, -height * .35f / PPM), 0);
+		shape.setAsBox(2 / PPM, 2 / PPM, new Vector2(width / 3 / PPM, -height * .35f / PPM), 0);
 
 		// create fixture definition
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
-		fdef.filter.maskBits = B2DVars.BIT_WALL;
+		fdef.filter.maskBits = B2DVars.BIT_WALL | B2DVars.BIT_BAD;
 
 		body.createFixture(fdef).setUserData("foot");
 
 		// create bottom left
-		shape.setAsBox(2 / PPM, 2 / PPM, new Vector2(width/2 / PPM + width / 4 / PPM, -height * .35f / PPM), 0);
+		shape.setAsBox(2 / PPM, 2 / PPM, new Vector2(width/2 / PPM + width / 6 / PPM, -height * .35f / PPM), 0);
 
 		// create fixture definition
 		fdef.shape = shape;
 		fdef.isSensor = true;
 		fdef.filter.categoryBits = B2DVars.BIT_PLAYER;
-		fdef.filter.maskBits = B2DVars.BIT_WALL;
+		fdef.filter.maskBits = B2DVars.BIT_WALL | B2DVars.BIT_BAD;
 
 		body.createFixture(fdef).setUserData("foot");
 		shape.dispose();

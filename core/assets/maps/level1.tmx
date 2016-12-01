@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="10" tilewidth="32" tileheight="32" nextobjectid="13">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="50" height="10" tilewidth="32" tileheight="32" nextobjectid="16">
  <tileset firstgid="1" name="tileset" tilewidth="32" tileheight="32" tilecount="196" columns="14">
   <image source="tileset.png" width="448" height="448"/>
  </tileset>
@@ -50,7 +50,18 @@
   <object id="11" x="1344" y="82.6667">
    <ellipse/>
   </object>
-  <object id="12" x="1493.33" y="141.333">
+  <object id="12" x="1501.83" y="142.333">
+   <ellipse/>
+  </object>
+ </objectgroup>
+ <objectgroup name="bad">
+  <object id="13" x="914.545" y="104.848">
+   <ellipse/>
+  </object>
+  <object id="14" x="371.879" y="208.848">
+   <ellipse/>
+  </object>
+  <object id="15" x="1298.55" y="207.515">
    <ellipse/>
   </object>
  </objectgroup>

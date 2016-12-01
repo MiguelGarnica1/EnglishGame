@@ -2,6 +2,7 @@ package com.picklegames.handlers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -38,7 +39,7 @@ public class GameButton {
 		this.height = height;
 		vec = new Vector3();
 
-		font = new BitmapFont();
+		font = new BitmapFont(Gdx.files.internal("fonts/comicsan.fnt"));
 		layout = new GlyphLayout();
 	}
 
@@ -46,8 +47,10 @@ public class GameButton {
 		return clicked;
 	}
 
-	public void setText(String s) {
+	public void setText(String s, float scale, Color color) {
 		text = s;
+		font.getData().setScale(scale);
+		font.setColor(color);
 		layout.setText(font, text);
 	}
 
@@ -70,8 +73,7 @@ public class GameButton {
 		
 		batch.draw(reg, x - width / 2, y - height / 2, width, height);
 		if (text != null) {
-			font.getData().setScale(2);
-			drawString(batch, text, x - layout.width, y + layout.height/2);
+			drawString(batch, text, x - layout.width/2, y + layout.height/2);
 		}
 	}
 

@@ -1,6 +1,7 @@
 package com.picklegames.gameStates;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -44,7 +45,7 @@ public class Menu extends GameState {
 		EnglishGame.res.loadTexture("images/button.png", "button");
 		tex = EnglishGame.res.getTexture("button");
 		playButton = new GameButton(new TextureRegion(tex, 64, 32), 600, 300, 200, 100, cam);
-		playButton.setText("PLAY");
+		playButton.setText("PLAY", 1.75f, Color.CYAN);
 
 		cam.setToOrtho(false, EnglishGame.V_WIDTH, EnglishGame.V_HEIGHT);
 	}
@@ -54,6 +55,7 @@ public class Menu extends GameState {
 		// TODO Auto-generated method stub
 
 		if (playButton.isClicked()) {
+			Play.level =1;
 			gsm.setState(GameStateManager.PLAY);
 		}
 
@@ -87,5 +89,8 @@ public class Menu extends GameState {
 		// TODO Auto-generated method stub
 
 	}
+	
+	
+	
 
 }

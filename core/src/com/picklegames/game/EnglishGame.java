@@ -19,20 +19,17 @@ public class EnglishGame extends ApplicationAdapter {
 	public static final int V_WIDTH = 800;
 	public static final int V_HEIGHT = 600;
 	public static final float SCALE = 1f;
-	public static final boolean DEBUG = true;
 	public static Content res;
-	public static World world;
 
 	private SpriteBatch batch;
 	private OrthographicCamera cam;
 	public static OrthographicCamera hudCam;
 	private GameStateManager gsm;
 
-	private Box2DDebugRenderer bdr;
+
 	
 	@Override
 	public void create() {
-		world = new World(new Vector2(0, -9.81f), true);
 
 		// load content
 		res = new Content();
@@ -48,9 +45,6 @@ public class EnglishGame extends ApplicationAdapter {
 		// load up game
 		gsm = new GameStateManager(this);
 
-		if (DEBUG) {
-			bdr = new Box2DDebugRenderer();
-		}
 
 	}
 
@@ -66,16 +60,10 @@ public class EnglishGame extends ApplicationAdapter {
 		gsm.render();
 		batch.end();
 
-		if (DEBUG) {
-			bdr.render(world, cam.combined.scl(B2DVars.PPM));
-		}
-		
-		
 	}
 	
 	public void update(float dt) {
 		cam.update();
-		world.step(dt, 6, 2);
 		gsm.update(dt);
 		
 	}
@@ -84,17 +72,12 @@ public class EnglishGame extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		super.dispose();
-		batch.dispose();
-		world.dispose();
+		batch.dispose();;
 		res.removeAll();
 	}
 
 	public static OrthographicCamera getHudCam() {
 		return hudCam;
-	}
-
-	public static World getWorld() {
-		return world;
 	}
 
 	public OrthographicCamera getCam() {

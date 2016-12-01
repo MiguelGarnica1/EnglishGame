@@ -17,11 +17,15 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.picklegames.entities.BadGuy;
 import com.picklegames.entities.Collectible;
 import com.picklegames.entities.Player;
 import com.picklegames.game.EnglishGame;
@@ -29,6 +33,7 @@ import com.picklegames.handlers.B2DVars;
 import com.picklegames.handlers.Background;
 import com.picklegames.handlers.CreateBox2D;
 import com.picklegames.handlers.GameStateManager;
+import com.picklegames.handlers.HUD;
 import com.picklegames.handlers.MyContactListener;
 
 // Miguel Garnica
@@ -40,15 +45,21 @@ public class Play extends GameState {
 	private float tileSize;
 	private OrthogonalTiledMapRenderer tmr;
 	private MyContactListener cl;
-	
+
 	private Texture tex;
 	private Background[] bg;
 
 	private Player player;
 	private Array<Collectible> coll;
-	
-	private BitmapFont font;
+	private Array<BadGuy> baddies;
 
+	private HUD hud;
+	private BitmapFont font;
+	
+	
+	private World world;
+	private Box2DDebugRenderer bdr;
+	public static final boolean DEBUG = true;
 	public static int level;
 
 	public Play(GameStateManager gsm) {
@@ -59,6 +70,10 @@ public class Play extends GameState {
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
+		
+		//create Box2D world
+		world = new World(new Vector2(0, -9.81f), true);
+		
 
 		// create player
 		player = new Player();
@@ -88,26 +103,39 @@ public class Play extends GameState {
 		// create collectible
 		coll = new Array<Collectible>();
 		createCollectibles();
-		
+		player.setTotalItems(coll.size);
+
+		// create bad guys
+		baddies = new Array<BadGuy>();
+		createBadguys();
+
 		// create and set world contact listener
 		cl = new MyContactListener();
-		EnglishGame.world.setContactListener(cl);
-		
+		world.setContactListener(cl);
+
 		// set box2d boundaries at edge of tile map
-		addBound(new Vector2(0,0), new Vector2(0,cam.viewportHeight), B2DVars.BIT_WALL, B2DVars.BIT_PLAYER);
-		addBound(new Vector2(tileMapWidth * tileSize, 0), new Vector2(tileMapWidth * tileSize, cam.viewportHeight), B2DVars.BIT_WALL, B2DVars.BIT_PLAYER);
-		
+		addBound(new Vector2(0, 0), new Vector2(0, cam.viewportHeight), B2DVars.BIT_WALL, B2DVars.BIT_PLAYER);
+		addBound(new Vector2(tileMapWidth * tileSize, 0), new Vector2(tileMapWidth * tileSize, cam.viewportHeight),
+				B2DVars.BIT_WALL, B2DVars.BIT_PLAYER);
+
 		// load font
 		font = new BitmapFont();
-		
+
 		// load sfx
 		EnglishGame.res.loadSound("sfx/jump.wav", "jump");
 		EnglishGame.res.loadSound("sfx/item.wav", "item");
-		
+		EnglishGame.res.loadSound("sfx/hit.wav", "hit");
+
 		// load music
 		EnglishGame.res.loadMusic("music/Black Violin - Opus.mp3", "opus");
 		EnglishGame.res.getMusic("opus").setVolume(.15f);
 		EnglishGame.res.getMusic("opus").play();
+
+		hud = new HUD(player.getTotalItems());
+		
+		if (DEBUG) {
+			bdr = new Box2DDebugRenderer();
+		}
 
 	}
 
@@ -133,12 +161,15 @@ public class Play extends GameState {
 
 	@Override
 	public void update(float dt) {
-
-		handleInput();
+		if (!hud.isWin()) {
+			handleInput();
+		}
 		
+		//update world
+		world.step(dt, 4, 4);
+
 		// update player
 		player.update(dt);
-		
 
 		// update bg
 		for (Background b : bg) {
@@ -149,29 +180,57 @@ public class Play extends GameState {
 		for (Collectible c : coll) {
 			c.update(dt);
 		}
-		
+
+		// update bad guys
+		for (BadGuy b : baddies) {
+			b.update(dt);
+		}
+
 		// remove collectible
 		Array<Body> bodies = cl.getBodiesToRemove();
-		for(int i = 0; i < bodies.size; i++){
+		for (int i = 0; i < bodies.size; i++) {
 			Body b = bodies.get(i);
-			coll.removeValue((Collectible) b.getUserData(), true );
-			EnglishGame.world.destroyBody(b);
+			coll.removeValue((Collectible) b.getUserData(), true);
+			world.destroyBody(b);
 			player.collectItem();
 			player.setScale(player.getWidth() * 1.05f, player.getHeight() * 1.05f);
 			EnglishGame.res.getSound("item").play();
-			
+
 		}
 		bodies.clear();
 
+		Array<Body> badguys = cl.getBaddiesToRemove();
+		for (int i = 0; i < badguys.size; i++) {
+			Body b = badguys.get(i);
+			baddies.removeValue((BadGuy) b.getUserData(), true);
+			player.getBody().applyLinearImpulse(0, 2, 0, 0, true);
+			world.destroyBody(b);
+			EnglishGame.res.getSound("hit").play();
+
+		}
+		badguys.clear();
+
 		// check player win
-		if (player.getWorldPosition().x > tileMapWidth * tileSize) {
+		if (player.getWorldPosition().x > tileMapWidth * tileSize - player.getWidth() * 2) {
 			System.out.println("YOU WIN!!");
+			hud.setWin(true);
+		}
+		if(hud.getContinueButton().isClicked()){
+			level++;
+			gsm.setState(GameStateManager.MENU);
+		}
+		
+		//check player hit
+		if(cl.isPlayerHit()){
+			player.getBody().applyLinearImpulse((float) Math.random() * -10,(float) Math.random() * 5, 0, 0, true);
 		}
 
 		// check player fall into void
 		if (player.getWorldPosition().y < 0) {
 			System.out.println("You lose!!");
 		}
+
+		hud.update(player.getNumItems(), dt);
 
 	}
 
@@ -183,7 +242,6 @@ public class Play extends GameState {
 
 		batch.setProjectionMatrix(cam.combined);
 		setCameraBounds();
-		
 
 		// render background
 		for (Background b : bg) {
@@ -201,19 +259,32 @@ public class Play extends GameState {
 			c.render(batch);
 		}
 
+		// render bad guys
+		for (BadGuy b : baddies) {
+			b.render(batch);
+		}
+
 		// render player
 		batch.setProjectionMatrix(cam.combined);
 		player.render(batch);
-		
+
+		batch.setProjectionMatrix(hudCam.combined);
+		hud.render(batch);
+
 		// render font
-		if(player.getWorldPosition().x > tileMapWidth * tileSize - player.getWidth() * 2){
+		if (player.getWorldPosition().x > tileMapWidth * tileSize - player.getWidth() * 2) {
 			font.getData().setScale(2);
 			font.draw(batch, "YOU WIN", cam.position.x, cam.position.y);
 		}
+		
+		if (DEBUG) {
+			bdr.render(world, cam.combined.scl(B2DVars.PPM));
+		}
+		
 	}
 
 	public void createPlayerBox2D() {
-		player.setBody(CreateBox2D.createPlayerBox(EnglishGame.world, 100, 100, player.getWidth(), player.getHeight(),
+		player.setBody(CreateBox2D.createPlayerBox(world, 100, 100, player.getWidth(), player.getHeight(),
 				new Vector2(player.getWidth() / 2, player.getHeight() / 2)));
 
 	}//
@@ -226,9 +297,9 @@ public class Play extends GameState {
 
 		// load tile map and renderer
 		try {
-			tileMap = new TmxMapLoader().load("maps/test.tmx");
+			tileMap = new TmxMapLoader().load("maps/level" + level + ".tmx");
 		} catch (Exception e) {
-			System.out.println("Cannot find file: maps/test.tmx");
+			System.out.println("Cannot find file: maps/level" + level + ".tmx");
 			Gdx.app.exit();
 		}
 		tmr = new OrthogonalTiledMapRenderer(tileMap);
@@ -282,8 +353,8 @@ public class Play extends GameState {
 				fdef.shape = cs;
 				fdef.friction = .15f;
 				fdef.filter.categoryBits = B2DVars.BIT_WALL;
-				fdef.filter.maskBits = B2DVars.BIT_PLAYER;
-				EnglishGame.getWorld().createBody(bdef).createFixture(fdef);
+				fdef.filter.maskBits = B2DVars.BIT_PLAYER | B2DVars.BIT_BAD;
+				world.createBody(bdef).createFixture(fdef);
 				cs.dispose();
 
 			}
@@ -307,7 +378,7 @@ public class Play extends GameState {
 			float x = (float) mo.getProperties().get("x", Float.class) / B2DVars.PPM;
 			float y = (float) mo.getProperties().get("y", Float.class) / B2DVars.PPM;
 			bdef.position.set(x, y);
-			Body body = EnglishGame.world.createBody(bdef);
+			Body body = world.createBody(bdef);
 
 			// create shape
 			CircleShape cs = new CircleShape();
@@ -317,7 +388,7 @@ public class Play extends GameState {
 			FixtureDef fdef = new FixtureDef();
 			fdef.shape = cs;
 			fdef.isSensor = true;
-			fdef.filter.categoryBits = B2DVars.BIT_WALL;
+			fdef.filter.categoryBits = B2DVars.BIT_ITEM;
 			fdef.filter.maskBits = B2DVars.BIT_PLAYER;
 			body.createFixture(fdef).setUserData("coll");
 			cs.dispose();
@@ -329,28 +400,118 @@ public class Play extends GameState {
 
 		}
 	}
-	
+
+	public void createBadguys() {
+
+		MapLayer layer = tileMap.getLayers().get("bad");
+		if (layer == null)
+			return;
+
+		for (MapObject mo : layer.getObjects()) {
+
+			BadGuy b = new BadGuy();
+			;
+
+			// create body definition
+			BodyDef bdef = new BodyDef();
+			bdef.type = BodyType.DynamicBody;
+
+			// get item position from object layer
+			float x = (float) mo.getProperties().get("x", Float.class) / B2DVars.PPM;
+			float y = (float) mo.getProperties().get("y", Float.class) / B2DVars.PPM;
+			bdef.position.set(x, y);
+			Body body = world.createBody(bdef);
+
+			// create shape
+			PolygonShape shape = new PolygonShape();
+			shape.setAsBox(b.getWidth() / 4 / B2DVars.PPM, b.getHeight() * .45f / B2DVars.PPM);
+
+			// create fixture
+			FixtureDef fdef = new FixtureDef();
+			fdef.shape = shape;
+			fdef.restitution = .75f;
+			fdef.filter.categoryBits = B2DVars.BIT_BAD;
+			fdef.filter.maskBits = B2DVars.BIT_PLAYER | B2DVars.BIT_WALL;
+			body.createFixture(fdef).setUserData("bad");
+
+			// middle head sensor
+			shape = new PolygonShape();
+			shape.setAsBox(2 / B2DVars.PPM, 2 / B2DVars.PPM, new Vector2(0, b.getHeight() * .45f / B2DVars.PPM), 0);
+			fdef.shape = shape;
+			fdef.isSensor = true;
+			fdef.filter.categoryBits = B2DVars.BIT_BAD;
+			fdef.filter.maskBits = B2DVars.BIT_PLAYER;
+
+			body.createFixture(fdef).setUserData("head");
+
+			// left head sensor
+			shape.setAsBox(2 / B2DVars.PPM, 2 / B2DVars.PPM,
+					new Vector2(-b.getWidth() / 6 / B2DVars.PPM, b.getHeight() * .45f / B2DVars.PPM), 0);
+			fdef.shape = shape;
+			fdef.isSensor = true;
+			fdef.filter.categoryBits = B2DVars.BIT_BAD;
+			fdef.filter.maskBits = B2DVars.BIT_PLAYER;
+
+			body.createFixture(fdef).setUserData("head");
+
+			// right head sensor
+			shape.setAsBox(2 / B2DVars.PPM, 2 / B2DVars.PPM,
+					new Vector2(b.getWidth() / 6 / B2DVars.PPM, b.getHeight() * .45f / B2DVars.PPM), 0);
+			fdef.shape = shape;
+			fdef.isSensor = true;
+			fdef.filter.categoryBits = B2DVars.BIT_BAD;
+			fdef.filter.maskBits = B2DVars.BIT_PLAYER;
+
+			body.createFixture(fdef).setUserData("head");
+
+			// left side
+			shape.setAsBox(2 / B2DVars.PPM, 10 / B2DVars.PPM, new Vector2(-b.getWidth() / 4 / B2DVars.PPM, 0), 0);
+			fdef.shape = shape;
+			fdef.isSensor = true;
+			fdef.filter.categoryBits = B2DVars.BIT_BAD;
+			fdef.filter.maskBits = B2DVars.BIT_PLAYER;
+
+			body.createFixture(fdef).setUserData("side");
+
+			// right side
+			shape.setAsBox(2 / B2DVars.PPM, 10 / B2DVars.PPM, new Vector2(b.getWidth() / 4 / B2DVars.PPM, 0), 0);
+			fdef.shape = shape;
+			fdef.isSensor = true;
+			fdef.filter.categoryBits = B2DVars.BIT_BAD;
+			fdef.filter.maskBits = B2DVars.BIT_PLAYER;
+
+			body.createFixture(fdef).setUserData("side");
+
+			shape.dispose();
+
+			// create new collectible and add to collectible list
+			b.setBody(body);
+			body.setUserData(b);
+			baddies.add(b);
+
+		}
+	}
+
 	public void addBound(Vector2 x1y1, Vector2 x2y2, short categoryBits, short maskBits) {
 
 		Body body;
 
 		BodyDef bdef = new BodyDef();
 		bdef.type = BodyType.StaticBody;
-		body = EnglishGame.world.createBody(bdef);
+		body = world.createBody(bdef);
 
 		ChainShape cs = new ChainShape();
 		Vector2[] vertices = new Vector2[2];
 		vertices[0] = new Vector2(x1y1.x / B2DVars.PPM, x1y1.y / B2DVars.PPM);
-		vertices[1] = new Vector2(x2y2.x / B2DVars.PPM, x2y2.y / B2DVars.PPM);	
+		vertices[1] = new Vector2(x2y2.x / B2DVars.PPM, x2y2.y / B2DVars.PPM);
 		cs.createChain(vertices);
 
 		FixtureDef fdef = new FixtureDef();
 		fdef.shape = cs;
 		fdef.filter.categoryBits = categoryBits;
-		fdef.filter.maskBits = maskBits;
+		fdef.filter.maskBits = B2DVars.BIT_PLAYER | B2DVars.BIT_BAD;
 		body.createFixture(fdef);
 
-	
 		cs.dispose();
 
 	}
@@ -371,6 +532,24 @@ public class Play extends GameState {
 	public void dispose() {
 		// TODO Auto-generated method stub
 		player.dispose();
+		world.clearForces();
+		EnglishGame.res.removeAll();
+		for(BadGuy b : baddies){
+			b.dispose();
+			world.destroyBody(b.getBody());
+		}
+		baddies.clear();
+		for(Collectible c : coll){
+			c.dispose();
+			world.destroyBody(c.getBody());
+		}
+		world.dispose();
+		baddies.clear();
+		player.dispose();
+		tex.dispose();
+		tmr.dispose();
+		font.dispose();
+			
 
 	}
 

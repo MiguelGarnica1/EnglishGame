@@ -28,4 +28,6 @@ public class B2DVars {
 
 	public static final short BIT_PLAYER = 2;
 	public static final short BIT_WALL = 4;
+	public static final short BIT_ITEM = 8;
+	public static final short BIT_BAD = 16;
 }

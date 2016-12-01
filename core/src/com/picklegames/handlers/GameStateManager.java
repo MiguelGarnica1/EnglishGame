@@ -20,7 +20,7 @@ public class GameStateManager {
 	public GameStateManager(EnglishGame game) {
 		this.game = game;
 		gameStates = new Stack<GameState>();
-		pushState(PLAY);
+		pushState(MENU);
 
 	}
 	
