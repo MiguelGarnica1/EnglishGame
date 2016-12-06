@@ -69,12 +69,12 @@ public class END extends GameState {
 		// scores.add(new Score(s));
 		// }
 
-	//	EnglishGame.res.loadTexture("images/menu.png", "menu");
+		EnglishGame.res.loadTexture("images/menu.png", "menu");
 		tex = EnglishGame.res.getTexture("menu");
 		bg = new Background(new TextureRegion(tex), cam, 1f);
 		bg.setVector(-450, 0);
 
-	//	EnglishGame.res.loadTexture("images/player.png", "player");
+		EnglishGame.res.loadTexture("images/player.png", "player");
 		tex = EnglishGame.res.getTexture("player");
 		TextureRegion[] reg = new TextureRegion[4];
 		for (int i = 0; i < reg.length; i++) {
@@ -82,22 +82,22 @@ public class END extends GameState {
 		}
 		animation = new Animation(reg, 1 / 12f);
 
-		//EnglishGame.res.loadTexture("images/veg1.png", "veg1");
+		EnglishGame.res.loadTexture("images/veg1.png", "veg1");
 		tex = EnglishGame.res.getTexture("veg1");
 		texR = TextureRegion.split(tex, 64, 64)[0];
 		ani1 = new Animation(texR, 1 / 12f);
 
-		//EnglishGame.res.loadTexture("images/veg2.png", "veg2");
+		EnglishGame.res.loadTexture("images/veg2.png", "veg2");
 		tex = EnglishGame.res.getTexture("veg2");
 		texR = TextureRegion.split(tex, 64, 64)[0];
 		ani2 = new Animation(texR, 1 / 12f);
 
-		//EnglishGame.res.loadTexture("images/veg3.png", "veg3");
+		EnglishGame.res.loadTexture("images/veg3.png", "veg3");
 		tex = EnglishGame.res.getTexture("veg3");
 		texR = TextureRegion.split(tex, 64, 64)[0];
 		ani3 = new Animation(texR, 1 / 12f);
 
-		//EnglishGame.res.loadTexture("images/burger.png", "burger");
+		EnglishGame.res.loadTexture("images/burger.png", "burger");
 		tex = EnglishGame.res.getTexture("burger");
 		texR = TextureRegion.split(tex, 32, 32)[0];
 		ani4 = new Animation(texR, 1 / 12f);
@@ -123,11 +123,12 @@ public class END extends GameState {
 	@Override
 	public void render() {
 		bg.render(batch);
-		batch.draw(animation.getFrame(), cam.viewportWidth / 2, 75, 150, 150);
+		batch.setProjectionMatrix(hudCam.combined);
+		batch.draw(animation.getFrame(), hudCam.viewportWidth / 2, 75, 150, 150);
 		batch.draw(ani1.getFrame(), 25, 85, 100, 100);
 		batch.draw(ani2.getFrame(), 150, 80, 100, 100);
 		batch.draw(ani3.getFrame(), 250, 85, 100, 100);
-		batch.draw(ani4.getFrame(), cam.viewportWidth - 150, 100, 50, 50);
+		batch.draw(ani4.getFrame(), hudCam.viewportWidth - 150, 100, 50, 50);
 		batch.setProjectionMatrix(hudCam.combined);
 
 		layout.setText(font, "SCORE   BURGERS   DEATHS");

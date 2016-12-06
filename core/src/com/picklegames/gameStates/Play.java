@@ -59,7 +59,7 @@ public class Play extends GameState {
 	
 	private World world;
 	private Box2DDebugRenderer bdr;
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	public static int level;
 	public static int deaths;
 	public static int burgersEat;
@@ -151,8 +151,10 @@ public class Play extends GameState {
 
 		if (Gdx.input.isKeyJustPressed(Keys.UP) && cl.isPlayerOnGround()) {
 			player.getBody().applyForceToCenter(0, 230, true);
+			
 			EnglishGame.res.getSound("jump").setVolume(0, .5f);
 			EnglishGame.res.getSound("jump").play();
+			
 
 		}
 
@@ -163,7 +165,7 @@ public class Play extends GameState {
 		if (!hud.isWin() && !hud.isPlayerDead()) {
 			handleInput();
 		}
-		
+		System.out.println(player.getBody().getLinearVelocity().y * B2DVars.PPM);
 		timePlayed+=dt;
 		
 		//update world

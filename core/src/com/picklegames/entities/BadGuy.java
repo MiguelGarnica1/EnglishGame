@@ -49,7 +49,7 @@ public class BadGuy extends Entity{
 	@Override
 	public void update(float dt){
 		super.update(dt);
-		System.out.println("BADGUY ID : "+id);
+		//System.out.println("BADGUY ID : "+id);
 		timeElapsed += dt;
 		if(timeElapsed> 1f){
 			move();
