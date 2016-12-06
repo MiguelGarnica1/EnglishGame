@@ -29,11 +29,15 @@ public class Menu extends GameState {
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
+		
+		// load images for menu background
 		EnglishGame.res.loadTexture("images/menu.png", "menu");
 		tex = EnglishGame.res.getTexture("menu");
 		bg = new Background(new TextureRegion(tex), cam, 1f);
 		bg.setVector(-450, 0);
 
+		
+		// load and set player animation
 		EnglishGame.res.loadTexture("images/player.png", "player");
 		tex = EnglishGame.res.getTexture("player");
 		TextureRegion[] reg = new TextureRegion[4];
@@ -42,6 +46,8 @@ public class Menu extends GameState {
 		}
 		animation = new Animation(reg, 1 / 12f);
 
+		
+		// create button
 		EnglishGame.res.loadTexture("images/button.png", "button");
 		tex = EnglishGame.res.getTexture("button");
 		playButton = new GameButton(new TextureRegion(tex, 64, 32), 600, 300, 200, 100, cam);

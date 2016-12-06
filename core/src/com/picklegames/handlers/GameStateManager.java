@@ -22,7 +22,6 @@ public class GameStateManager {
 	public GameStateManager(EnglishGame game) {
 		this.game = game;
 		gameStates = new Stack<GameState>();
-		Play.level = 3;
 		pushState(MENU);
 
 	}

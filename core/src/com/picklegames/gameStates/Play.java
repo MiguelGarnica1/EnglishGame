@@ -125,13 +125,17 @@ public class Play extends GameState {
 		// load font
 		font = new BitmapFont();
 
+		// play music
 		EnglishGame.res.getMusic("opus").setVolume(.15f);
 		if(!EnglishGame.res.getMusic("opus").isPlaying()){
 			EnglishGame.res.getMusic("opus").play();
 		}
 
+		// load heads up display
 		hud = new HUD(player.getTotalItems());
 		
+		
+		// debug renderer
 		if (DEBUG) {
 			bdr = new Box2DDebugRenderer();
 		}
@@ -141,15 +145,15 @@ public class Play extends GameState {
 	@Override
 	public void handleInput() {
 
-		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
+		if (Gdx.input.isKeyPressed(Keys.A)) {
 			player.getBody().setLinearVelocity(-2, player.getBody().getLinearVelocity().y);
-		} else if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
+		} else if (Gdx.input.isKeyPressed(Keys.D)) {
 			player.getBody().setLinearVelocity(2, player.getBody().getLinearVelocity().y);
 		} else {
 			player.getBody().setLinearVelocity(0, player.getBody().getLinearVelocity().y);
 		}
 
-		if (Gdx.input.isKeyJustPressed(Keys.UP) && cl.isPlayerOnGround()) {
+		if (Gdx.input.isKeyJustPressed(Keys.W) && cl.isPlayerOnGround()) {
 			player.getBody().applyForceToCenter(0, 230, true);
 			
 			EnglishGame.res.getSound("jump").setVolume(0, .5f);
@@ -165,7 +169,8 @@ public class Play extends GameState {
 		if (!hud.isWin() && !hud.isPlayerDead()) {
 			handleInput();
 		}
-		System.out.println(player.getBody().getLinearVelocity().y * B2DVars.PPM);
+		
+		// update timePlayed
 		timePlayed+=dt;
 		
 		//update world
@@ -204,6 +209,7 @@ public class Play extends GameState {
 		}
 		bodies.clear();
 
+		// remove badguys 
 		Array<Body> badguys = cl.getBaddiesToRemove();
 		for (int i = 0; i < badguys.size; i++) {
 			Body b = badguys.get(i);
@@ -226,13 +232,13 @@ public class Play extends GameState {
 		if(hud.getContinueButton().isClicked()){
 			if(level<3){
 				level++;
-				//dispose();
 				gsm.setState(GameStateManager.PLAY);
 			}else{
-				//dispose();
 				gsm.setState(GameStateManager.END);
 			}
 		}
+		
+		// update HUD retry button
 		if(hud.getRetryButton().isClicked()){
 			score--;
 			deaths++;
@@ -290,6 +296,7 @@ public class Play extends GameState {
 		batch.setProjectionMatrix(cam.combined);
 		player.render(batch);
 
+		// render HUD
 		batch.setProjectionMatrix(hudCam.combined);
 		hud.render(batch);
 	

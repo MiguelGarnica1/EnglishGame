@@ -49,10 +49,6 @@ public class EnglishGame extends ApplicationAdapter {
 		// load music
 		EnglishGame.res.loadMusic("music/Black Violin - Opus.mp3", "opus");
 
-		Play.deaths = 0;
-		Play.burgersEat = 0;
-		Play.score = 0;
-
 		// load up game
 		gsm = new GameStateManager(this);
 
@@ -81,7 +77,6 @@ public class EnglishGame extends ApplicationAdapter {
 	public void dispose() {
 		super.dispose();
 		batch.dispose();
-		;
 		res.removeAll();
 	}
 

@@ -59,15 +59,15 @@ public class END extends GameState {
 		// Play.burgersEat + ":" + Play.deaths, false);
 
 		// kgb = new Scanner(file.readString());
-		font = new BitmapFont(Gdx.files.internal("fonts/comicsan.fnt"));
-		font.setColor(Color.GOLD);
 		// scores = new ArrayList<Score>();
-		layout = new GlyphLayout();
-		//
 		// while (kgb.hasNextLine()) {
 		// String s = kgb.nextLine();
 		// scores.add(new Score(s));
 		// }
+		font = new BitmapFont(Gdx.files.internal("fonts/comicsan.fnt"));
+		font.setColor(Color.GOLD);
+
+		layout = new GlyphLayout();
 
 		EnglishGame.res.loadTexture("images/menu.png", "menu");
 		tex = EnglishGame.res.getTexture("menu");
@@ -136,7 +136,7 @@ public class END extends GameState {
 				hudCam.viewportHeight - 75);
 
 		layout.setText(font, (Play.score) + "             " + Play.burgersEat + "            " + Play.deaths);
-		font.draw(batch, (Play.score ) + "             " + Play.burgersEat + "            " + Play.deaths,
+		font.draw(batch, (Play.score) + "             " + Play.burgersEat + "            " + Play.deaths,
 				hudCam.viewportWidth / 2 - layout.width / 2, hudCam.viewportHeight - 150);
 
 		layout.setText(font, "TOTAL TIME PLAYED");
@@ -145,7 +145,7 @@ public class END extends GameState {
 
 		layout.setText(font, Play.timePlayed / 60 + "minutes");
 		font.draw(batch, Play.timePlayed / 60 + "minutes", hudCam.viewportWidth / 2 - layout.width / 2,
-				hudCam.viewportHeight / 2 );
+				hudCam.viewportHeight / 2);
 
 		// if (listener.getName() != null) {
 		// font.draw(batch, file.readString(), hudCam.viewportWidth / 2 -
